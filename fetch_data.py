@@ -1,12 +1,16 @@
 import gzip
-import os, hashlib
+import os
+import hashlib
 
+import tqdm
 import numpy as np
 import requests
+from matplotlib.pyplot import imshow
 
+np.set_printoptions(suppress=True)
 
 def fetch(url):
-    file_path = os.path.join('/tmp', hashlib.md5(url.encode(encoding='utf-8')))
+    file_path = os.path.join('/tmp', hashlib.md5(url.encode(encoding='utf-8')).hexdigest())
     if os.path.isfile(file_path):
         with open(file_path, 'rb') as f:
             dat = f.read()
@@ -19,3 +23,4 @@ def fetch(url):
 
 if __name__ == '__main__':
     X_train = fetch('http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz')[0x10:].reshape((-1, 28,28))
+    print(X_train[1])
