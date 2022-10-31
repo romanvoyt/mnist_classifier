@@ -1,11 +1,9 @@
 import numpy as np
 import pandas as pd
-import tqdm
 from tqdm import trange
 import torch
 from torch import nn
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
 import plotly.express as px
 
 from fetch_data import fetch
@@ -35,11 +33,11 @@ def test():
 
     loss_f = nn.NLLLoss(reduction='none')
     optim = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0)
-    BS = 32
+    batch_size = 32
     losses, accuracies = [], []
 
     for i in (t := trange(1000)):
-        samp = np.random.randint(0, X_train.shape[0], size=BS)
+        samp = np.random.randint(0, X_train.shape[0], size=batch_size)
         X = torch.tensor(X_train[samp].reshape((-1, 28*28))).float()
         Y = torch.tensor(Y_train[samp]).long()
         model.zero_grad()
@@ -55,6 +53,8 @@ def test():
         accuracies.append(accuracy)
         t.set_description(f'loss: {loss:.2f} accuracy: {accuracy:.4f}')
 
+    # show losses and accuracies
+    
     df = pd.DataFrame()
     df['accuracies'] = accuracies
     df['losses'] = losses
@@ -63,7 +63,7 @@ def test():
 
     # evaluation
     Y_test_preds = torch.argmax(model(torch.tensor(X_test.reshape((-1, 28*28))).float()), dim=1).numpy()
-    print(f'test accuracy: {(Y_test == Y_test_preds).mean():.4f}')
+    print(f'test numpy accuracy: {(Y_test == Y_test_preds).mean():.4f}')
 
 
 if __name__ == '__main__':
